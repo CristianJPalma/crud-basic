@@ -1,20 +1,23 @@
 package com.sena.crud_basic.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+@Entity(name = "Instructors")
 public class InstructorsDTO {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_instructor")
     private int id_instructor;
 
-    @Column(name = "first_name",nullable = false,length = 20)
+    @Column(name = "first_name", nullable = false, length = 20)
     private String first_name;
 
-    @Column(name = "last_name",nullable = false,length = 20)
+    @Column(name = "last_name", nullable = false, length =  20)
     private String last_name;
 
     public int getId_instructor() {
@@ -40,4 +43,5 @@ public class InstructorsDTO {
     public void setLast_name(String last_name) {
         this.last_name = last_name;
     }
+    
 }
