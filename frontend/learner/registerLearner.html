@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Lateral con Contenido</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Menú Lateral -->
+    <div id="sidebar" class="sidebar">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="javascript:void(0)" onclick="changeContent('inicio')">Inicio</a>
+        <a href="javascript:void(0)" onclick="changeContent('servicios')">Servicios</a>
+        <a href="javascript:void(0)" onclick="changeContent('acerca')">Acerca de</a>
+        <a href="javascript:void(0)" onclick="changeContent('contacto')">Contacto</a>
+    </div>
+
+    <!-- Botón para abrir el menú lateral -->
+    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Abrir Menú</span>
+
+    <!-- Contenedor de contenido -->
+    <div id="content" class="content">
+        <h1>Bienvenido a nuestra página</h1>
+        <p>Selecciona una opción del menú para ver más detalles.</p>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
