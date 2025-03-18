@@ -39,8 +39,8 @@ public class SchedulesDTO {
         return id_schedule;
     }
 
-    public void setId_scheldule(int id_scheldule) {
-        this.id_schedule = id_scheldule;
+    public void setId_schedule(int id_schedule) {
+        this.id_schedule = id_schedule;
     }
 
     public CoursesDTO getId_course() {

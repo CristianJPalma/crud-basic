@@ -17,6 +17,10 @@ public class CoursesDTO {
     @Column(name = "course_name", nullable = false, length = 20)
     private String course_name;
 
+    @Column(name = "status", nullable = false)
+    private int status;
+    
+
     public int getId_courses() {
         return id_courses;
     }
@@ -31,6 +35,14 @@ public class CoursesDTO {
 
     public void setCourse_name(String course_name) {
         this.course_name = course_name;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
     
 }
