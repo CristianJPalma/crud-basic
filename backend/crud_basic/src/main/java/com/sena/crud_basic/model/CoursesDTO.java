@@ -6,7 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
-@Entity(name = "Courses")
+@Entity(name = "courses")
 public class CoursesDTO {
 
     @Id
@@ -20,6 +20,15 @@ public class CoursesDTO {
     @Column(name = "status", nullable = false)
     private int status;
     
+
+    public CoursesDTO(int id_courses, String course_name, int status) {
+        this.id_courses = id_courses;
+        this.course_name = course_name;
+        this.status = status;
+    }
+
+    public CoursesDTO() {
+    }
 
     public int getId_courses() {
         return id_courses;
