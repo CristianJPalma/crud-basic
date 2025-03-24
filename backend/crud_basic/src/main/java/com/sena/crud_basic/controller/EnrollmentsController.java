@@ -11,13 +11,13 @@ import com.sena.crud_basic.service.EnrollmentsService;
 @RestController
 public class EnrollmentsController {
 
-    @Autowired
-    private EnrollmentsService enrollmentsService;
-    @PostMapping("/enrollment")
-    public String registerEnrollment(@RequestBody EnrollmentsDTO enrollment) {
+    // @Autowired
+    // private EnrollmentsService enrollmentsService;
+    // @PostMapping("/enrollment")
+    // public String registerEnrollment(@RequestBody EnrollmentsDTO enrollment) {
 
-        enrollmentsService.save(enrollment);
+    //     enrollmentsService.save(enrollment);
 
-        return "OK";
-    }
+    //     return "OK";
+    // }
 }

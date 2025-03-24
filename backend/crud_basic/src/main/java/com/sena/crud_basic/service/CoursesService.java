@@ -27,7 +27,7 @@ public class CoursesService {
     }
 
     public responseDTO save(CoursesDTO course) {
-        if (course.getCourse_name().length() < 1 || course.getCourse_name().length() > 255) {
+        if (course.getCourse_name().length() < 1 || course.getCourse_name().length() > 20) {
             responseDTO response = new responseDTO(
                     "Error",
                     "El nombre debe tener una longitud entre 1 y 255 caracteres");

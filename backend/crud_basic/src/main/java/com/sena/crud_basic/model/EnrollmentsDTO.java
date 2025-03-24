@@ -26,8 +26,23 @@ public class EnrollmentsDTO {
     @JoinColumn(name = "id_course")
     private CoursesDTO id_course;
 
-    @Column(name = "enrollment_date", nullable = false)
+    @Column(name = "enrollment_date", nullable = false, length = 10)
     private Date enrollment_date;
+
+    @Column(name = "status", nullable = false, length = 2)
+    private int status;
+
+    public EnrollmentsDTO() {
+    }
+
+    public EnrollmentsDTO(int id_enrollment, LearnersDTO id_learner, CoursesDTO id_course, Date enrollment_date,
+            int status) {
+        this.id_enrollment = id_enrollment;
+        this.id_learner = id_learner;
+        this.id_course = id_course;
+        this.enrollment_date = enrollment_date;
+        this.status = status;
+    }
 
     public int getId_enrollment() {
         return id_enrollment;
@@ -60,5 +75,15 @@ public class EnrollmentsDTO {
     public void setEnrollment_date(Date enrollment_date) {
         this.enrollment_date = enrollment_date;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+    
+    
     
 }

@@ -17,7 +17,7 @@ public class CoursesDTO {
     @Column(name = "course_name", nullable = false, length = 20)
     private String course_name;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length =  2)
     private int status;
     
 

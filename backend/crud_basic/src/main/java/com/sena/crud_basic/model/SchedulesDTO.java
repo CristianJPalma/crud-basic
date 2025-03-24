@@ -21,7 +21,7 @@ public class SchedulesDTO {
     @ManyToOne
     @JoinColumn(name = "id_course")
     private CoursesDTO id_course;
-
+    
     @ManyToOne
     @JoinColumn(name = "id_instructor")
     private InstructorsDTO id_instructor;
@@ -35,7 +35,24 @@ public class SchedulesDTO {
     @Column(name = "end_time", nullable = false)
     private Time end_time;
 
-    public int getId_scheldule() {
+    @Column(name = "status", nullable = false)
+    private int status;
+
+    public SchedulesDTO() {
+    }
+
+    public SchedulesDTO(int id_schedule, CoursesDTO id_course, InstructorsDTO id_instructor, String week_day,
+            Time start_time, Time end_time, int status) {
+        this.id_schedule = id_schedule;
+        this.id_course = id_course;
+        this.id_instructor = id_instructor;
+        this.week_day = week_day;
+        this.start_time = start_time;
+        this.end_time = end_time;
+        this.status = status;
+    }
+
+    public int getId_schedule() {
         return id_schedule;
     }
 
@@ -82,6 +99,15 @@ public class SchedulesDTO {
     public void setEnd_time(Time end_time) {
         this.end_time = end_time;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+    
 
     
 }
