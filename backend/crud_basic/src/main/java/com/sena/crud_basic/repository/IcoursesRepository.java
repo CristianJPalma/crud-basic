@@ -12,6 +12,6 @@ public interface IcoursesRepository extends JpaRepository<CoursesDTO, Integer> {
     @Query("SELECT c FROM courses c WHERE c.status = 1")
     List<CoursesDTO> findAllCoursesActive();
 
-    @Query("SELECT c FROM courses c WHERE c.course_name LIKE %?1%")
+    @Query("SELECT c FROM courses c WHERE c.course_name LIKE %?1% AND c.status = 1")
     List<CoursesDTO> search(String filter);
 }

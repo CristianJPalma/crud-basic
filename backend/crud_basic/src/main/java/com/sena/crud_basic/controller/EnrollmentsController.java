@@ -1,23 +1,57 @@
 package com.sena.crud_basic.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sena.crud_basic.DTO.responseDTO;
 import com.sena.crud_basic.model.EnrollmentsDTO;
 import com.sena.crud_basic.service.EnrollmentsService;
 
 @RestController
+@RequestMapping("/api/v1/Enrollments")
 public class EnrollmentsController {
 
-    // @Autowired
-    // private EnrollmentsService enrollmentsService;
-    // @PostMapping("/enrollment")
-    // public String registerEnrollment(@RequestBody EnrollmentsDTO enrollment) {
+@Autowired
+    private EnrollmentsService EnrollmentsService;
 
-    //     enrollmentsService.save(enrollment);
+    @PostMapping("/")
+    public ResponseEntity<Object> registerEnrollment(
+        @RequestBody EnrollmentsDTO Enrollment) {
+        responseDTO response = EnrollmentsService.save(Enrollment);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 
-    //     return "OK";
-    // }
+    @GetMapping("/")
+    public ResponseEntity<Object> findAllEnrollment() {
+        List<EnrollmentsDTO> listEnrollment = EnrollmentsService.getAllEnrollments();
+        return new ResponseEntity<>(listEnrollment, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> findByIdEnrollment(@PathVariable int id) {
+        EnrollmentsDTO enrollment = EnrollmentsService.getEnrollmentById(id);
+        return new ResponseEntity<>(enrollment, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/{filter}")
+    public ResponseEntity<Object> search(@PathVariable String filter) {
+        List<EnrollmentsDTO> listEnrollment = EnrollmentsService.getFilterEnrollments(filter);
+        return new ResponseEntity<>(listEnrollment, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Object> deleteEnrollment(@PathVariable int id) {
+        responseDTO response = EnrollmentsService.delete(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

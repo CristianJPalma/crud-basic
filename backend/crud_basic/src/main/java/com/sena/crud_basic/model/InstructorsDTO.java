@@ -19,6 +19,16 @@ public class InstructorsDTO {
 
     @Column(name = "last_name", nullable = false, length =  20)
     private String last_name;
+    
+    @Column(name = "status", nullable = false, length =  2)
+    private int status;
+
+    public InstructorsDTO(int id_instructor, String first_name, String last_name, int status) {
+        this.id_instructor = id_instructor;
+        this.first_name = first_name;
+        this.last_name = last_name;
+        this.status = status;
+    }
 
     public int getId_instructor() {
         return id_instructor;
@@ -42,6 +52,14 @@ public class InstructorsDTO {
 
     public void setLast_name(String last_name) {
         this.last_name = last_name;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
     
 }

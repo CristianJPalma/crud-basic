@@ -31,13 +31,13 @@ public class CoursesController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Object> findAllBook() {
+    public ResponseEntity<Object> findAllCourses() {
         List<CoursesDTO> listCourse = coursesService.getAllCourses();
         return new ResponseEntity<>(listCourse, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Object> findByIdBook(@PathVariable int id) {
+    public ResponseEntity<Object> findByIdCourse(@PathVariable int id) {
         CoursesDTO course = coursesService.getCourseById(id);
         return new ResponseEntity<>(course, HttpStatus.OK);
     }
