@@ -1,6 +1,7 @@
 package com.sena.crud_basic.model;
 
 import java.sql.Time;
+import java.util.ArrayList;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,9 +26,10 @@ public class SchedulesDTO {
     @ManyToOne
     @JoinColumn(name = "id_instructor")
     private InstructorsDTO id_instructor;
+    
 
-    @Column(name = "week_day", nullable = false, length = 10)
-    private String week_day;
+    @Column(name = "week_day", nullable = false)
+    private ArrayList<String> week_day;
 
     @Column(name = "start_time", nullable = false)
     private Time start_time;
@@ -40,8 +42,9 @@ public class SchedulesDTO {
 
     public SchedulesDTO() {
     }
+    
 
-    public SchedulesDTO(int id_schedule, CoursesDTO id_course, InstructorsDTO id_instructor, String week_day,
+    public SchedulesDTO(int id_schedule, CoursesDTO id_course, InstructorsDTO id_instructor, ArrayList<String> week_day,
             Time start_time, Time end_time, int status) {
         this.id_schedule = id_schedule;
         this.id_course = id_course;
@@ -51,6 +54,7 @@ public class SchedulesDTO {
         this.end_time = end_time;
         this.status = status;
     }
+
 
     public int getId_schedule() {
         return id_schedule;
@@ -76,13 +80,6 @@ public class SchedulesDTO {
         this.id_instructor = id_instructor;
     }
 
-    public String getWeek_day() {
-        return week_day;
-    }
-
-    public void setWeek_day(String week_day) {
-        this.week_day = week_day;
-    }
 
     public Time getStart_time() {
         return start_time;
@@ -106,6 +103,16 @@ public class SchedulesDTO {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+
+    public ArrayList<String> getWeek_day() {
+        return week_day;
+    }
+
+
+    public void setWeek_day(ArrayList<String> week_day) {
+        this.week_day = week_day;
     }
     
 

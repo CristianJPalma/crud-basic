@@ -23,6 +23,9 @@ public class InstructorsDTO {
     @Column(name = "status", nullable = false, length =  2)
     private int status;
 
+    public InstructorsDTO() {
+    }
+
     public InstructorsDTO(int id_instructor, String first_name, String last_name, int status) {
         this.id_instructor = id_instructor;
         this.first_name = first_name;
