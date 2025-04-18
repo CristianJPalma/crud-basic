@@ -1,4 +1,4 @@
-package config;
+package com.sena.crud_basic.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,7 +7,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 @Configuration
-public class corsConfig {
+public class CorsConfig {
 
     @Bean
     public CorsFilter corsFilter() {
@@ -16,10 +16,11 @@ public class corsConfig {
         
         //no permitida
         // permitir solicitudes desde todos los origenes
-        // // config.addAllowedOrigin("*");
-        // config.addAllowedOrigin("http://127.0.0.1:5500");
+        config.addAllowedOrigin("*");
+        config.addAllowedOrigin("http://127.0.0.1:5501");
+        config.addAllowedOrigin("http://127.0.0.1:5501/course/course.html");
         config.addAllowedOrigin("http://127.0.0.1:8080");
-        // config.addAllowedOrigin("http://172.30.7.20:5500");
+        config.addAllowedOrigin("http://172.30.7.20:5501");
         
         // config.addAllowedOrigin("n cantidad de servidores");
 
