@@ -10,6 +10,8 @@
     <title>Course</title>
 </head>
 <body class="d-flex flex-column h-100">
+
+    <!-- Barra de navegación -->
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
         <a href="javascript:void(0)" onclick="changeContent('enrollment')">Enrrolment</a>
@@ -19,46 +21,46 @@
         <a href="javascript:void(0)" onclick="changeContent('scheldule')">Scheldule</a>
     </div>
     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menú</span>
+
+
+    <!-- contenido -->
     <main class="flex-shrink-0">
         <div class="container">
             <h3 class="my-3" id="titulo">Courses</h3>
 
+            <!-- Agregar un curso -->
             <a id="mostrarRegister" class="btn btn-success">Agregar</a>
-            <form id="contenido" action="#" class="row g-3" method="post" autocomplete="off">
+            <form id="contenido"  class="row g-3" method="post" autocomplete="on">
                 <div class="col-md-6">
-                    <label for="first_Name" class="form-label">Course Name</label>
-                    <input type="text" class="form-control" id="first_Name" name="first_Name" required>
+                    <label for="course_name" class="form-label">Course Name</label>
+                    <input type="text" class="form-control" id="course_name" name="course_name" required>
                 </div>
 
                 <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="submit" class="btn btn-primary" id="guardarCurso">Guardar</button>
                 </div>
 
             </form>
+            
+    
             <table class="table table-hover table-bordered my-3" aria-describedby="titulo">
                 <thead class="table-dark">
                     <tr>
                         <th scope="col">Id</th>
                         <th scope="col">Course Name</th>
+                        <th scope="col">Status</th>
                         <th scope="col">Options</th>
                     </tr>
                 </thead>
 
-                <tbody>
+                <tbody id="lista">
                     <tr>
-                        <td>0</td>
-                        <td>ADSO</td>
-                        <td>
-                            <a href="" class="btn btn-warning btn-sm me-2">Editar</a>
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#eliminaModal" data-bs-id="1">Eliminar</button>
-                        </td>
+                        <!-- lista de cursos  -->
                     </tr>
                 </tbody>
             </table>
         </div>
     </main>
-    <button id="cursos" style="background-color: antiquewhite;">a</button>
 
 
     <div class="modal fade" id="eliminaModal" tabindex="-1" aria-labelledby="eliminaModalLabel" aria-hidden="true">
@@ -72,10 +74,11 @@
                     <p>¿Desea eliminar este registro?</p>
                 </div>
                 <div class="modal-footer">
-                    <form id="form-elimina" action="" method="post">
+                    <form id="form-elimina" method="post">
                         <input type="hidden" name="_method" value="delete">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <button type="button" class="btn btn-danger"  data-bs-dismiss="modal">Eliminar</button>
+                    
                     </form>
                 </div>
             </div>
@@ -88,22 +91,21 @@
 
     <script>
 
-        const eliminaModal = document.getElementById('eliminaModal')
+        const eliminaModal = document.getElementById('eliminaModal');
+
         if (eliminaModal) {
             eliminaModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const id = button.getAttribute('data-bs-id')
+                // Botón que activó el modal
+                const button = event.relatedTarget;
 
-                // Update the modal's content.
-                const form = eliminaModal.querySelector('#form-elimina')
-                form.setAttribute('action', 'elimina.html?id=' + id)
-            })
+                // Extraer el ID del atributo data-bs-id
+                idEliminar = button.getAttribute('data-bs-id');
+                console.log('ID del curso a eliminar:', idEliminar);
+            });
         }
     </script>
-</body>
 
-<script src="../js/script.js"></script>
-<script src="course.js"></script>
+    <script src="../js/script.js"></script>
+    <script src="course.js"></script>
+</body>
 </html>
