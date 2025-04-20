@@ -6,3 +6,12 @@ main>.container {
     display: none;
 
 }
+.is-invalid {
+    border-color: #dc3545 !important;
+}
+
+#captcha-container.border-danger {
+    padding: 10px;
+}#course_name {
+    display: block; /* Asegúrate de que no esté oculto */
+}

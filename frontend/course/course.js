@@ -1,35 +1,56 @@
 const api = 'http://localhost:8080';
 
-let guardarCurso = document.getElementById('guardarCurso');
+// Validar y guardar curso
+document.getElementById('guardarCurso').addEventListener('click', function () {
+    const courseNameInput = document.getElementById('course_name');
+    const captchaContainer = document.getElementById('captcha-container');
+    const captchaError = document.getElementById('captcha-error');
+    const recaptchaResponse = grecaptcha.getResponse();
 
-guardarCurso.addEventListener('click', function(event) {
-    
-    event.preventDefault();
+    let isValid = true;
 
-    let course_name = document.getElementById('course_name').value;
-    
-    let nuevoCurso = {
-        course_name: course_name,
-        status: 1
-    };
+    // Validar si el campo de entrada está vacío
+    if (!courseNameInput.value.trim()) {
+        courseNameInput.classList.add('is-invalid');
+        isValid = false;
+    } else {
+        courseNameInput.classList.remove('is-invalid');
+    }
 
-    //Peticion POST para crear un nuevo curso
-    fetch(api + '/api/v1/courses/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(nuevoCurso)
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log('Curso creado:', data);
-    })
-    .catch(err => console.error(err));
+    // Validar si el CAPTCHA está resuelto
+    if (!recaptchaResponse) {
+        captchaError.classList.remove('d-none');
+        captchaContainer.classList.add('border', 'border-danger', 'rounded');
+        isValid = false;
+    } else {
+        captchaError.classList.add('d-none');
+        captchaContainer.classList.remove('border', 'border-danger', 'rounded');
+    }
+
+    // Si todo es válido, enviar el formulario
+    if (isValid) {
+        const nuevoCurso = {
+            course_name: courseNameInput.value.trim(),
+            status: 1
+        };
+
+        // Petición POST para crear un nuevo curso
+        fetch(api + '/api/v1/courses/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(nuevoCurso)
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('Curso creado:', data);
+            courseNameInput.value = ''; // Limpiar el input
+            grecaptcha.reset(); // Reiniciar el CAPTCHA
+        })
+        .catch(err => console.error(err));
+    }
 });
-
-
-
 
 // Consulta de cursos disponibles
 document.addEventListener('DOMContentLoaded', function () {
@@ -82,4 +103,40 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ejecuta la función cargarcursos cada segundo
     setInterval(cargarcursos, 1000);
+});
+
+function setupModal() {
+    const botonAgregar = document.getElementById('mostrarRegister');
+    const modalElement = document.getElementById('modalCurso');
+
+    if (typeof bootstrap !== 'undefined') {
+        const modalInstance = new bootstrap.Modal(modalElement);
+
+        botonAgregar.addEventListener('click', function () {
+            modalInstance.show();
+        });
+    } else {
+        console.error("Bootstrap no está disponible. Asegúrate de haber incluido Bootstrap JS.");
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    setupModal();
+});
+document.getElementById("contenido").addEventListener("submit", function (e) {
+  const captchaResponse = grecaptcha.getResponse();
+
+  const captchaError = document.getElementById("captcha-error");
+
+  if (!captchaResponse) {
+    e.preventDefault();
+    captchaError.classList.remove("d-none");
+    document.querySelector('.g-recaptcha').classList.add('is-invalid');
+    return;
+  } else {
+    captchaError.classList.add("d-none");
+    document.querySelector('.g-recaptcha').classList.remove('is-invalid');
+  }
+
+  // Continuar: aquí podrías hacer un fetch POST si estás usando API
 });
