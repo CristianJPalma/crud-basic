@@ -1,6 +1,7 @@
 package com.sena.crud_basic.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +35,6 @@ public class CoursesService {
             return response;
         }
 
-        // añadir las n condiciones
-
         IcoursesRepository.save(course);
         responseDTO response = new responseDTO(
                 "OK",
@@ -43,7 +42,33 @@ public class CoursesService {
         return response;
         // return true;
     }
+    public responseDTO update(int id, CoursesDTO updatedCourse) {
+        // Buscar el curso por su ID
+        CoursesDTO existingCourse = getCourseById(id);
+    
+        // Validar si el curso existe
+        if (existingCourse == null) {
+            responseDTO response = new responseDTO(
+                    "Error",
+                    "Curso no encontrado");
+            return response;
+        }
+    
+        // Solo actualizamos los campos que no sean nulos en el objeto actualizado
+        if (updatedCourse.getCourse_name() != null && !updatedCourse.getCourse_name().isEmpty()) {
+            existingCourse.setCourse_name(updatedCourse.getCourse_name());
+        }
 
+    
+        // Realizar la actualización en la base de datos
+        IcoursesRepository.save(existingCourse);
+        
+        responseDTO response = new responseDTO(
+                "OK",
+                "Curso actualizado correctamente");
+        return response;
+    }
+    
 
     public responseDTO delete(int id) {
         CoursesDTO course = getCourseById(id);
