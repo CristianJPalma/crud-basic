@@ -1,28 +1,40 @@
-const api = 'http://172.30.2.129:8080'
+const api = 'http://172.30.2.129:8080';
 const mostrarRegistro = document.getElementById('mostrarRegister');
 const agregarCurso = document.getElementById('agregarCurso');
 const cerrarModal = document.getElementById('cerrarModal');
-;
 document.addEventListener('DOMContentLoaded', () => {
   
     mostrarRegistro.addEventListener('click', () => {
-      // Mostrar el modal
-      agregarCurso.classList.add('content-modal-activo');
-      document.body.classList.add('modal-open');
+        // Mostrar el modal
+        agregarCurso.classList.add('content-modal-activo');
+        document.body.classList.add('modal-open');
     });
     cerrarModal.addEventListener('click', () => {
         agregarCurso.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
-      });
+    });
 
-  });
-  
+});
+
+// Variables para los widgets de los reCAPTCHAs
+let formCaptchaWidgetId = null;
+let deleteCaptchaWidgetId = null;
+
+// Función que se llama cuando los reCAPTCHAs se cargan
+function onCaptchaLoadCallback() {
+    formCaptchaWidgetId = grecaptcha.render('formCaptcha', {
+        'sitekey': '6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq'
+    });
+
+    deleteCaptchaWidgetId = grecaptcha.render('deleteCaptcha', {
+        'sitekey': '6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq'
+    });
+}
 
 // Validar y guardar curso
 document.getElementById('guardarCurso').addEventListener('click', function (event) {
     event.preventDefault();
     const courseNameInput = document.getElementById('course_name');
-    const recaptcha = document.getElementById('recaptcha');
     let isValid = true;
 
     // Validar si el campo de entrada está vacío
@@ -32,14 +44,12 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
     } else {
         courseNameInput.classList.remove('is-invalid');
     }
-    const recaptchaResponse = grecaptcha.getResponse();
 
+    // Validar el reCAPTCHA del formulario de creación de curso
+    const recaptchaResponse = grecaptcha.getResponse(formCaptchaWidgetId);
     if (recaptchaResponse.length === 0) {
-      // Si el reCAPTCHA no ha sido completado, prevenir el envío del formulario
-      recaptcha.classList.add('invalido')
-      isValid = false;
+        isValid = false;
     }
-
 
     // Si todo es válido, enviar el formulario
     if (isValid) {
@@ -62,15 +72,16 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
             courseNameInput.value = ''; // Limpiar el input
         })
         .catch(err => console.error(err));
+
         agregarCurso.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
+        grecaptcha.reset(formCaptchaWidgetId);  // Resetear el reCAPTCHA para el formulario
     }
 });
 
 // Consulta de cursos disponibles
 document.addEventListener('DOMContentLoaded', function () {
     const lista = document.getElementById('lista');
-    let idEliminar;
 
     function cargarcursos() {
         fetch(api + '/api/v1/courses/')
@@ -110,3 +121,42 @@ document.addEventListener('DOMContentLoaded', function () {
     setInterval(cargarcursos, 1000);
 });
 
+// Eliminar curso
+document.getElementById('eliminarCurso').addEventListener('click', function (event) {
+    event.preventDefault();  // Prevenir el comportamiento por defecto
+
+    // Validar el reCAPTCHA para la eliminación
+    const recaptchaResponse = grecaptcha.getResponse(deleteCaptchaWidgetId);
+    if (recaptchaResponse.length === 0) {
+        return;
+    }
+
+    // Obtener el ID del curso a eliminar
+    let id = document.querySelector('[data-bs-target="#eliminaModal"]').dataset.bsId;
+
+    // Realizar la solicitud DELETE para eliminar el curso
+    fetch(api + '/api/v1/courses/' + id, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (response.ok) {
+            alert('Curso eliminado correctamente');
+        } else {
+            alert('Hubo un error al eliminar el curso');
+        }
+    })
+    .catch(error => {
+        console.error('Error al eliminar el curso:', error);
+        alert('Hubo un problema al eliminar el curso');
+    });
+
+    // Cerrar el modal de eliminación
+    const modal = bootstrap.Modal.getInstance(document.getElementById('eliminaModal'));
+    modal.hide();
+
+    // Resetear el reCAPTCHA de eliminación
+    grecaptcha.reset(deleteCaptchaWidgetId);
+});
