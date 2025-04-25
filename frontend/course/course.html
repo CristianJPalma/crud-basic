@@ -36,8 +36,11 @@
         <form method="post">
           <span>Course name</span>
           <input id="course_name" type="text" required>
-          <div class="g-recaptcha" data-size="normal" data-theme="dark" data-sitekey="6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq"></div>
+          <div id="recaptcha">
+            <div class="g-recaptcha" data-size="normal" data-theme="dark" data-sitekey="6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq"></div>
+          </div>
           <button  id="guardarCurso">Accept</button>
+          <button type="button" id="cerrarModal" class="btn btn-danger">Close</button>
         </form>
       </div>
 

@@ -1,19 +1,28 @@
-const api = 'http://172.30.4.228:8080';
-const mostrarRegistro = document.getElementById('mostrarRegister')
+const api = 'http://172.30.2.129:8080'
+const mostrarRegistro = document.getElementById('mostrarRegister');
+const agregarCurso = document.getElementById('agregarCurso');
+const cerrarModal = document.getElementById('cerrarModal');
+;
+document.addEventListener('DOMContentLoaded', () => {
+  
+    mostrarRegistro.addEventListener('click', () => {
+      // Mostrar el modal
+      agregarCurso.classList.add('content-modal-activo');
+      document.body.classList.add('modal-open');
+    });
+    cerrarModal.addEventListener('click', () => {
+        agregarCurso.classList.remove('content-modal-activo');
+        document.body.classList.remove('modal-open');
+      });
 
-
-mostrarRegistro.addEventListener('click',()=>{
-    const agregarCurso = document.getElementById('agregar-user')
-    agregarCurso.classList.add('activo')
-    document.body.classList.add('modal-open')
-
-})
+  });
+  
 
 // Validar y guardar curso
 document.getElementById('guardarCurso').addEventListener('click', function (event) {
     event.preventDefault();
     const courseNameInput = document.getElementById('course_name');
-
+    const recaptcha = document.getElementById('recaptcha');
     let isValid = true;
 
     // Validar si el campo de entrada está vacío
@@ -22,6 +31,13 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
         isValid = false;
     } else {
         courseNameInput.classList.remove('is-invalid');
+    }
+    const recaptchaResponse = grecaptcha.getResponse();
+
+    if (recaptchaResponse.length === 0) {
+      // Si el reCAPTCHA no ha sido completado, prevenir el envío del formulario
+      recaptcha.classList.add('invalido')
+      isValid = false;
     }
 
 
@@ -46,6 +62,8 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
             courseNameInput.value = ''; // Limpiar el input
         })
         .catch(err => console.error(err));
+        agregarCurso.classList.remove('content-modal-activo');
+        document.body.classList.remove('modal-open');
     }
 });
 
