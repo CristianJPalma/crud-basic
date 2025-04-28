@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.sena.crud_basic.DTO.responseDTO;
 import com.sena.crud_basic.model.CoursesDTO;
+import com.sena.crud_basic.model.CourseWithCaptchaDTO;
 import com.sena.crud_basic.repository.IcoursesRepository;
 
 @Service
@@ -14,6 +14,9 @@ public class CoursesService {
 
     @Autowired
     private IcoursesRepository IcoursesRepository;
+
+    @Autowired
+    private CaptchaService captchaService;
 
     public List<CoursesDTO> getAllCourses() {
         return IcoursesRepository.findAllCoursesActive();
@@ -27,20 +30,31 @@ public class CoursesService {
         return IcoursesRepository.findById(id).get();
     }
 
-    public responseDTO save(CoursesDTO course) {
-        if (course.getCourse_name().length() < 1 || course.getCourse_name().length() > 20) {
+    public responseDTO save(CourseWithCaptchaDTO courseWithCaptchaDTO) {
+        // Primero, validamos el captcha usando el token que viene en el DTO
+        boolean isCaptchaValid = captchaService.validateCaptcha(courseWithCaptchaDTO.getRecaptchaToken());
+
+        if (!isCaptchaValid) {
+            // Si el captcha no es válido, devolvemos un mensaje de error
+            responseDTO response = new responseDTO(
+                    "Error",
+                    "Captcha inválido. La operación ha sido rechazada.");
+            return response;
+        }
+
+        // Si el captcha es válido, procedemos con la lógica original de guardar el curso
+        if (courseWithCaptchaDTO.getCourse().getCourse_name().length() < 1 || courseWithCaptchaDTO.getCourse().getCourse_name().length() > 20) {
             responseDTO response = new responseDTO(
                     "Error",
                     "El nombre debe tener una longitud entre 1 y 255 caracteres");
             return response;
         }
 
-        IcoursesRepository.save(course);
+        IcoursesRepository.save(courseWithCaptchaDTO.getCourse());
         responseDTO response = new responseDTO(
                 "OK",
                 "Se registró correctamente");
         return response;
-        // return true;
     }
     public responseDTO update(int id, CoursesDTO updatedCourse) {
         // Buscar el curso por su ID

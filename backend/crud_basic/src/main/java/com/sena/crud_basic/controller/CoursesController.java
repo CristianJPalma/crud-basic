@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.crud_basic.DTO.responseDTO;
 import com.sena.crud_basic.model.CoursesDTO;
+import com.sena.crud_basic.model.CourseWithCaptchaDTO;
 import com.sena.crud_basic.service.CoursesService;
 
 @RestController
@@ -25,10 +26,13 @@ public class CoursesController {
     @Autowired
     private CoursesService coursesService;
 
+    // Cambiar el tipo de entrada de CoursesDTO a CourseWithCaptchaDTO
     @PostMapping("/")
-    public ResponseEntity<Object> registerCourse(
-        @RequestBody CoursesDTO course) {
-        responseDTO response = coursesService.save(course);
+    public ResponseEntity<Object> registerCourse(@RequestBody CourseWithCaptchaDTO courseWithCaptchaDTO) {
+        // Pasar el DTO con el captcha al servicio
+        responseDTO response = coursesService.save(courseWithCaptchaDTO);
+        
+        // Devolver la respuesta correspondiente, que puede ser un error o éxito
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -53,14 +57,15 @@ public class CoursesController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> updateCourse(@PathVariable int id, @RequestBody CoursesDTO updatedCourse) {
         responseDTO response = coursesService.update(id, updatedCourse);
-        // Aquí podemos devolver un 200 OK si la actualización fue exitosa
-        // Si hubo algún error, el servicio ya se encarga de devolver la respuesta adecuada
+        
+        // Retornar un código de estado adecuado dependiendo de si fue exitoso o no
         if ("OK".equals(response.getStatus())) {
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> deleteCourse(@PathVariable int id) {
         responseDTO response = coursesService.delete(id);
