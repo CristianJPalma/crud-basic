@@ -1,20 +1,14 @@
-const api = 'http://172.30.2.129:8080';
+const api = 'http://192.168.18.20:8080';
+
+// Variables globales
 const mostrarRegistro = document.getElementById('mostrarRegister');
 const agregarCurso = document.getElementById('agregarCurso');
 const cerrarModal = document.getElementById('cerrarModal');
-document.addEventListener('DOMContentLoaded', () => {
-  
-    mostrarRegistro.addEventListener('click', () => {
-        // Mostrar el modal
-        agregarCurso.classList.add('content-modal-activo');
-        document.body.classList.add('modal-open');
-    });
-    cerrarModal.addEventListener('click', () => {
-        agregarCurso.classList.remove('content-modal-activo');
-        document.body.classList.remove('modal-open');
-    });
-
-});
+const lista = document.getElementById('lista'); // Tabla de cursos
+const editCourseNameInput = document.getElementById('edit-course_name'); // Input del nombre del curso
+const editCourseIdInput = document.getElementById('edit-courseId'); // Input oculto para el ID del curso
+const guardarCambiosBtn = document.getElementById('guardarCambios'); // Botón para guardar cambios
+const eliminarCursoBtn = document.getElementById('eliminarCurso'); // Botón para eliminar curso
 
 // Variables para los widgets de los reCAPTCHAs
 let formCaptchaWidgetId = null;
@@ -31,7 +25,20 @@ function onCaptchaLoadCallback() {
     });
 }
 
-// Validar y guardar curso
+// Mostrar y cerrar el modal de agregar curso
+document.addEventListener('DOMContentLoaded', () => {
+    mostrarRegistro.addEventListener('click', () => {
+        agregarCurso.classList.add('content-modal-activo');
+        document.body.classList.add('modal-open');
+    });
+
+    cerrarModal.addEventListener('click', () => {
+        agregarCurso.classList.remove('content-modal-activo');
+        document.body.classList.remove('modal-open');
+    });
+});
+
+// Validar y guardar un nuevo curso
 document.getElementById('guardarCurso').addEventListener('click', function (event) {
     event.preventDefault();
     const courseNameInput = document.getElementById('course_name');
@@ -54,12 +61,14 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
     // Si todo es válido, enviar el formulario
     if (isValid) {
         const nuevoCurso = {
+            course: {
             course_name: courseNameInput.value.trim(),
             status: 1
+            },
+            recaptchaToken: recaptchaResponse
         };
 
-        // Petición POST para crear un nuevo curso
-        fetch(api + '/api/v1/courses/', {
+        fetch(`${api}/api/v1/courses/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -75,67 +84,110 @@ document.getElementById('guardarCurso').addEventListener('click', function (even
 
         agregarCurso.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
-        grecaptcha.reset(formCaptchaWidgetId);  // Resetear el reCAPTCHA para el formulario
+        grecaptcha.reset(formCaptchaWidgetId); // Resetear el reCAPTCHA para el formulario
     }
 });
 
-// Consulta de cursos disponibles
-document.addEventListener('DOMContentLoaded', function () {
-    const lista = document.getElementById('lista');
+// Cargar cursos disponibles
+function cargarcursos() {
+    fetch(`${api}/api/v1/courses/`)
+        .then(respuesta => respuesta.json())
+        .then(datos => {
+            lista.innerHTML = '';
+            datos.forEach(course => {
+                const tr = document.createElement('tr');
 
-    function cargarcursos() {
-        fetch(api + '/api/v1/courses/')
-            .then(respuesta => respuesta.json())
-            .then(datos => {
-                lista.innerHTML = '';
-                datos.forEach(course => {
-                    const tr = document.createElement('tr');
+                const tdId = document.createElement('td');
+                tdId.textContent = course.id_courses;
+                tr.appendChild(tdId);
 
-                    const tdId = document.createElement('td');
-                    tdId.textContent = course.id_courses;
-                    tr.appendChild(tdId);
+                const tdName = document.createElement('td');
+                tdName.textContent = course.course_name;
+                tr.appendChild(tdName);
 
-                    const tdName = document.createElement('td');
-                    tdName.textContent = course.course_name;
-                    tr.appendChild(tdName);
+                const tdActions = document.createElement('td');
+                tdActions.innerHTML = `
+                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal"
+                        data-bs-target="#editarModal" data-bs-id="${course.id_courses}">Edit</button>
+                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
+                        data-bs-target="#eliminaModal" data-bs-id="${course.id_courses}">Eliminate</button>
+                `;
+                tr.appendChild(tdActions);
 
-                    const tdStatus = document.createElement('td');
-                    tdStatus.textContent = course.status;
-                    tr.appendChild(tdStatus);
+                lista.appendChild(tr);
+            });
+        })
+        .catch(error => console.error('Error al cargar los cursos:', error));
+}
 
-                    const tdActions = document.createElement('td');
-                    tdActions.innerHTML = `
-                        <a href="" class="btn btn-warning btn-sm me-2">Edit</a>
-                        <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#eliminaModal" data-bs-id="${course.id_courses}">Eliminate</button>
-                    `;
-                    tr.appendChild(tdActions);
+// Ejecutar la función cargarcursos cada segundo
+setInterval(cargarcursos, 1000);
 
-                    lista.appendChild(tr);
-                });
-            })
-            .catch(error => console.error('Error al cargar los cursos:', error));
+// Editar curso
+lista.addEventListener('click', function (event) {
+    if (event.target.classList.contains('btn-warning')) { // Detectar clic en el botón "Edit"
+        const courseId = event.target.getAttribute('data-bs-id'); // Obtener el ID del curso
+        const courseRow = event.target.closest('tr'); // Obtener la fila del curso
+        const courseName = courseRow.querySelector('td:nth-child(2)').textContent; // Obtener el nombre del curso
+
+        // Asignar valores al modal
+        editCourseIdInput.value = courseId;
+        editCourseNameInput.value = courseName;
+    }
+});
+
+// Guardar cambios en un curso
+guardarCambiosBtn.addEventListener('click', function () {
+    const courseId = editCourseIdInput.value; // Obtener el ID del curso
+    const courseName = editCourseNameInput.value.trim(); // Obtener el nuevo nombre del curso
+
+    // Validar que el nombre del curso no esté vacío
+    if (!courseName) {
+        editCourseNameInput.classList.add('is-invalid');
+        return;
+    } else {
+        editCourseNameInput.classList.remove('is-invalid');
     }
 
-    // Ejecuta la función cargarcursos cada segundo
-    setInterval(cargarcursos, 1000);
+    const updatedCourse = { course_name: courseName };
+
+    fetch(`${api}/api/v1/courses/${courseId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updatedCourse)
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        } else {
+            throw new Error('Error al actualizar el curso');
+        }
+    })
+    .then(data => {
+        console.log('Curso actualizado:', data);
+        const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
+        modal.hide();
+    })
+    .catch(error => {
+        console.error('Error al actualizar el curso:', error);
+        alert('Hubo un problema al actualizar el curso');
+    });
 });
 
 // Eliminar curso
-document.getElementById('eliminarCurso').addEventListener('click', function (event) {
-    event.preventDefault();  // Prevenir el comportamiento por defecto
+eliminarCursoBtn.addEventListener('click', function (event) {
+    event.preventDefault();
 
-    // Validar el reCAPTCHA para la eliminación
     const recaptchaResponse = grecaptcha.getResponse(deleteCaptchaWidgetId);
     if (recaptchaResponse.length === 0) {
         return;
     }
 
-    // Obtener el ID del curso a eliminar
-    let id = document.querySelector('[data-bs-target="#eliminaModal"]').dataset.bsId;
+    const id = document.querySelector('[data-bs-target="#eliminaModal"]').dataset.bsId;
 
-    // Realizar la solicitud DELETE para eliminar el curso
-    fetch(api + '/api/v1/courses/' + id, {
+    fetch(`${api}/api/v1/courses/${id}`, {
         method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
@@ -153,10 +205,7 @@ document.getElementById('eliminarCurso').addEventListener('click', function (eve
         alert('Hubo un problema al eliminar el curso');
     });
 
-    // Cerrar el modal de eliminación
     const modal = bootstrap.Modal.getInstance(document.getElementById('eliminaModal'));
     modal.hide();
-
-    // Resetear el reCAPTCHA de eliminación
     grecaptcha.reset(deleteCaptchaWidgetId);
 });

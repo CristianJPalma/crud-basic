@@ -11,13 +11,13 @@ function closeNav() {
 function changeContent(page) {
     switch (page) {
         case 'enrollment':
-            location.href = '/enrollment/enrollment.html';
+            location.href = '../enrollment/enrollment.html';
             break;
         case 'learner':
-            location.href = '/learner/learner.html';
+            location.href = '../learner/learner.html';
             break;
         case 'instructor':
-            location.href = '/instructor/instructor.html';
+            location.href = '../instructor/instructor.html';
             break;
         case 'course':
             location.href = '../course/course.html';

@@ -27,7 +27,7 @@
   </div>
   <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menu</span>
 
-  <!-- Contenido -->
+  <!-- Contenido principal -->
   <main class="flex-shrink-0">
     <div class="container">
       <h3 class="my-3" id="titulo">Courses</h3>
@@ -35,21 +35,20 @@
       <div class="content-modal" id="agregarCurso">
         <form method="post">
           <span>Course name</span>
-          <input id="course_name" type="text" required placeholder="Ej: Multimedia">
+          <input id="course_name" type="text" required placeholder="Ej: Multimedia" />
           <!-- ReCAPTCHA para el formulario de agregar curso -->
           <div class="re" id="formCaptcha"></div>
-          <button id="guardarCurso">Accept</button>
+          <button id="guardarCurso" class="btn btn-primary">Accept</button>
           <button type="button" id="cerrarModal" class="btn btn-danger">Close</button>
         </form>
       </div>
 
-      <!-- Tabla -->
+      <!-- Tabla de cursos -->
       <table class="table table-hover table-bordered my-3" aria-describedby="titulo">
         <thead class="table-dark">
           <tr>
             <th scope="col">Id</th>
             <th scope="col">Course Name</th>
-            <th scope="col">Status</th>
             <th scope="col">Options</th>
           </tr>
         </thead>
@@ -61,6 +60,33 @@
       </table>
     </div>
   </main>
+
+  <!-- Modal Editar -->
+  <div class="modal fade" id="editarModal" tabindex="-1" aria-labelledby="editarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editarModalLabel">Edit Course</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="form-editar" method="post">
+            <!-- Campo oculto para el ID del curso -->
+            <input type="hidden" id="edit-courseId" name="courseId" />
+            <!-- Campo para editar el nombre del curso -->
+            <div class="mb-3">
+              <label for="edit-course_name" class="form-label">Course Name</label>
+              <input type="text" class="form-control" id="edit-course_name" name="course_name" placeholder="Course name" required />
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" id="guardarCambios" class="btn btn-primary">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Modal Eliminar -->
   <div class="modal fade" id="eliminaModal" tabindex="-1" aria-labelledby="eliminaModalLabel" aria-hidden="true">
@@ -81,7 +107,7 @@
             <div class="modal-footer">
               <!-- Botones del modal -->
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" id="eliminarCurso" class="btn btn-danger">Delete</button> <!-- Sin "data-bs-dismiss" -->
+              <button type="button" id="eliminarCurso" class="btn btn-danger">Delete</button>
             </div>
           </form>
         </div>
