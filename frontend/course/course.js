@@ -1,31 +1,33 @@
 const api = 'http://192.168.18.20:8080';
 
-// Variables globales
+// Elementos DOM
 const mostrarRegistro = document.getElementById('mostrarRegister');
 const agregarCurso = document.getElementById('agregarCurso');
 const cerrarModal = document.getElementById('cerrarModal');
-const lista = document.getElementById('lista'); // Tabla de cursos
-const editCourseNameInput = document.getElementById('edit-course_name'); // Input del nombre del curso
-const editCourseIdInput = document.getElementById('edit-courseId'); // Input oculto para el ID del curso
-const guardarCambiosBtn = document.getElementById('guardarCambios'); // Botón para guardar cambios
-const eliminarCursoBtn = document.getElementById('eliminarCurso'); // Botón para eliminar curso
+const lista = document.getElementById('lista');
+const editCourseNameInput = document.getElementById('edit-course_name');
+const editCourseIdInput = document.getElementById('edit-courseId');
+const guardarCambiosBtn = document.getElementById('guardarCambios');
+const eliminarCursoBtn = document.getElementById('eliminarCurso');
 
-// Variables para los widgets de los reCAPTCHAs
+// Captcha widgets
 let formCaptchaWidgetId = null;
 let deleteCaptchaWidgetId = null;
 
-// Función que se llama cuando los reCAPTCHAs se cargan
+// ID del curso seleccionado (global)
+let selectedCourseId = null;
+
+// Cargar captchas
 function onCaptchaLoadCallback() {
     formCaptchaWidgetId = grecaptcha.render('formCaptcha', {
         'sitekey': '6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq'
     });
-
     deleteCaptchaWidgetId = grecaptcha.render('deleteCaptcha', {
         'sitekey': '6LeADR4rAAAAAD0c9CIg4-8uRh6jMAnHzJTyzfzq'
     });
 }
 
-// Mostrar y cerrar el modal de agregar curso
+// Mostrar modal agregar curso
 document.addEventListener('DOMContentLoaded', () => {
     mostrarRegistro.addEventListener('click', () => {
         agregarCurso.classList.add('content-modal-activo');
@@ -36,176 +38,174 @@ document.addEventListener('DOMContentLoaded', () => {
         agregarCurso.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
     });
+
+    cargarcursos();
+    setInterval(cargarcursos, 10000); // cada 10s para evitar tantos requests
 });
 
-// Validar y guardar un nuevo curso
-document.getElementById('guardarCurso').addEventListener('click', function (event) {
+// Agregar curso
+document.getElementById('guardarCurso').addEventListener('click', async (event) => {
     event.preventDefault();
-    const courseNameInput = document.getElementById('course_name');
-    let isValid = true;
+    const courseName = document.getElementById('course_name').value.trim();
 
-    // Validar si el campo de entrada está vacío
-    if (!courseNameInput.value.trim()) {
-        courseNameInput.classList.add('is-invalid');
-        isValid = false;
-    } else {
-        courseNameInput.classList.remove('is-invalid');
+    if (!courseName) {
+        document.getElementById('course_name').classList.add('is-invalid');
+        return;
     }
+    document.getElementById('course_name').classList.remove('is-invalid');
 
-    // Validar el reCAPTCHA del formulario de creación de curso
     const recaptchaResponse = grecaptcha.getResponse(formCaptchaWidgetId);
-    if (recaptchaResponse.length === 0) {
-        isValid = false;
+    if (!recaptchaResponse) {
+        alert("Completa el reCAPTCHA para continuar.");
+        return;
     }
 
-    // Si todo es válido, enviar el formulario
-    if (isValid) {
-        const nuevoCurso = {
-            course: {
-            course_name: courseNameInput.value.trim(),
+    const nuevoCurso = {
+        course: {
+            course_name: courseName,
             status: 1
-            },
-            recaptchaToken: recaptchaResponse
-        };
+        },
+        recaptchaToken: recaptchaResponse
+    };
 
-        fetch(`${api}/api/v1/courses/`, {
+    try {
+        const res = await fetch(`${api}/api/v1/courses/`, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevoCurso)
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log('Curso creado:', data);
-            courseNameInput.value = ''; // Limpiar el input
-        })
-        .catch(err => console.error(err));
+        });
+        const data = await res.json();
+        console.log('Curso creado:', data);
 
+        document.getElementById('course_name').value = '';
         agregarCurso.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
-        grecaptcha.reset(formCaptchaWidgetId); // Resetear el reCAPTCHA para el formulario
+        grecaptcha.reset(formCaptchaWidgetId);
+        cargarcursos(); // recargar tabla
+    } catch (error) {
+        console.error('Error creando curso:', error);
     }
 });
 
-// Cargar cursos disponibles
-function cargarcursos() {
-    fetch(`${api}/api/v1/courses/`)
-        .then(respuesta => respuesta.json())
-        .then(datos => {
-            lista.innerHTML = '';
-            datos.forEach(course => {
-                const tr = document.createElement('tr');
+// Cargar cursos
+async function cargarcursos() {
+    try {
+        const res = await fetch(`${api}/api/v1/courses/`);
+        const cursos = await res.json();
 
-                const tdId = document.createElement('td');
-                tdId.textContent = course.id_courses;
-                tr.appendChild(tdId);
+        lista.innerHTML = ''; // limpiar tabla
+        cursos.forEach(course => {
+            const tr = document.createElement('tr');
 
-                const tdName = document.createElement('td');
-                tdName.textContent = course.course_name;
-                tr.appendChild(tdName);
-
-                const tdActions = document.createElement('td');
-                tdActions.innerHTML = `
-                    <button class="btn btn-warning btn-sm me-2" data-bs-toggle="modal"
-                        data-bs-target="#editarModal" data-bs-id="${course.id_courses}">Edit</button>
-                    <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                        data-bs-target="#eliminaModal" data-bs-id="${course.id_courses}">Eliminate</button>
-                `;
-                tr.appendChild(tdActions);
-
-                lista.appendChild(tr);
-            });
-        })
-        .catch(error => console.error('Error al cargar los cursos:', error));
+            tr.innerHTML = `
+                <td>${course.id_courses}</td>
+                <td>${course.course_name}</td>
+                <td>
+                    <button class="btn btn-warning btn-sm me-2" data-id="${course.id_courses}" data-name="${course.course_name}" data-action="edit">Edit</button>
+                    <button class="btn btn-danger btn-sm" data-id="${course.id_courses}" data-action="delete">Delete</button>
+                </td>
+            `;
+            lista.appendChild(tr);
+        });
+    } catch (error) {
+        console.error('Error cargando cursos:', error);
+    }
 }
 
-// Ejecutar la función cargarcursos cada segundo
-setInterval(cargarcursos, 1000);
+// Manejar clicks en la tabla (edit y delete)
+lista.addEventListener('click', (event) => {
+    const action = event.target.dataset.action;
+    const courseId = event.target.dataset.id;
+    const courseName = event.target.dataset.name;
 
-// Editar curso
-lista.addEventListener('click', function (event) {
-    if (event.target.classList.contains('btn-warning')) { // Detectar clic en el botón "Edit"
-        const courseId = event.target.getAttribute('data-bs-id'); // Obtener el ID del curso
-        const courseRow = event.target.closest('tr'); // Obtener la fila del curso
-        const courseName = courseRow.querySelector('td:nth-child(2)').textContent; // Obtener el nombre del curso
+    if (!action) return;
 
-        // Asignar valores al modal
+    selectedCourseId = courseId;
+
+    if (action === 'edit') {
         editCourseIdInput.value = courseId;
         editCourseNameInput.value = courseName;
+        const modal = new bootstrap.Modal(document.getElementById('editarModal'));
+        modal.show();
+    } else if (action === 'delete') {
+        document.getElementById('eliminaModalLabel').textContent = `Eliminar curso ${courseId}`;
+        const modal = new bootstrap.Modal(document.getElementById('eliminaModal'));
+        modal.show();
     }
 });
 
-// Guardar cambios en un curso
-guardarCambiosBtn.addEventListener('click', function () {
-    const courseId = editCourseIdInput.value; // Obtener el ID del curso
-    const courseName = editCourseNameInput.value.trim(); // Obtener el nuevo nombre del curso
+// Guardar cambios
+guardarCambiosBtn.addEventListener('click', async () => {
+    const courseId = editCourseIdInput.value;
+    const courseName = editCourseNameInput.value.trim();
 
-    // Validar que el nombre del curso no esté vacío
     if (!courseName) {
         editCourseNameInput.classList.add('is-invalid');
         return;
-    } else {
-        editCourseNameInput.classList.remove('is-invalid');
     }
+    editCourseNameInput.classList.remove('is-invalid');
 
-    const updatedCourse = { course_name: courseName };
+    try {
+        const res = await fetch(`${api}/api/v1/courses/${courseId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ course_name: courseName })
+        });
 
-    fetch(`${api}/api/v1/courses/${courseId}`, {
-        method: 'PATCH',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(updatedCourse)
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.json();
+        if (res.ok) {
+            console.log('Curso actualizado');
+            cargarcursos();
+            bootstrap.Modal.getInstance(document.getElementById('editarModal')).hide();
         } else {
-            throw new Error('Error al actualizar el curso');
+            console.error('Error al actualizar el curso');
+            alert('Error al actualizar el curso.');
         }
-    })
-    .then(data => {
-        console.log('Curso actualizado:', data);
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editarModal'));
-        modal.hide();
-    })
-    .catch(error => {
-        console.error('Error al actualizar el curso:', error);
-        alert('Hubo un problema al actualizar el curso');
-    });
+    } catch (error) {
+        console.error('Error actualizando curso:', error);
+    }
 });
 
 // Eliminar curso
-eliminarCursoBtn.addEventListener('click', function (event) {
+eliminarCursoBtn.addEventListener('click', async (event) => {
     event.preventDefault();
 
     const recaptchaResponse = grecaptcha.getResponse(deleteCaptchaWidgetId);
-    if (recaptchaResponse.length === 0) {
+    if (!recaptchaResponse) {
+        alert("Completa el reCAPTCHA para continuar.");
         return;
     }
 
-    const id = document.querySelector('[data-bs-target="#eliminaModal"]').dataset.bsId;
+    if (!selectedCourseId) {
+        alert("No se encontró el curso a eliminar.");
+        return;
+    }
 
-    fetch(`${api}/api/v1/courses/${id}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            alert('Curso eliminado correctamente');
+    const courseWithCaptchaDTO = {
+        course: { id_courses: selectedCourseId },
+        recaptchaToken: recaptchaResponse
+    };
+
+    try {
+        const res = await fetch(`${api}/api/v1/courses/`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(courseWithCaptchaDTO)
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            console.log('Curso eliminado:', data);
+            alert(data.message);
+            cargarcursos();
+            bootstrap.Modal.getInstance(document.getElementById('eliminaModal')).hide();
         } else {
-            alert('Hubo un error al eliminar el curso');
+            const err = await res.json();
+            console.error('Error eliminando curso:', err);
+            alert(err.message || "Error eliminando curso.");
         }
-    })
-    .catch(error => {
-        console.error('Error al eliminar el curso:', error);
-        alert('Hubo un problema al eliminar el curso');
-    });
-
-    const modal = bootstrap.Modal.getInstance(document.getElementById('eliminaModal'));
-    modal.hide();
-    grecaptcha.reset(deleteCaptchaWidgetId);
+    } catch (error) {
+        console.error('Error en solicitud de eliminación:', error);
+    } finally {
+        grecaptcha.reset(deleteCaptchaWidgetId);
+    }
 });
