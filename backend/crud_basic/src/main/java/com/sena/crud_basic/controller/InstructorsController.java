@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.crud_basic.DTO.responseDTO;
+import com.sena.crud_basic.model.InstructorWithCaptchaDTO;
 import com.sena.crud_basic.model.InstructorsDTO;
 import com.sena.crud_basic.service.InstructorsService;
 
@@ -27,9 +28,8 @@ public class InstructorsController {
     private InstructorsService InstructorsService;
 
     @PostMapping("/")
-    public ResponseEntity<Object> registerInstructor(
-        @RequestBody InstructorsDTO instructor) {
-        responseDTO response = InstructorsService.save(instructor);
+    public ResponseEntity<Object> registerInstructor(@RequestBody InstructorWithCaptchaDTO instructorWithCaptchaDTO) {
+        responseDTO response = InstructorsService.save(instructorWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

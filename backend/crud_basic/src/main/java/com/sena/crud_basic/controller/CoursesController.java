@@ -66,9 +66,15 @@ public class CoursesController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteCourse(@PathVariable int id) {
-        responseDTO response = coursesService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteCourse(@RequestBody CourseWithCaptchaDTO courseWithCaptchaDTO) {
+        responseDTO response = coursesService.delete(courseWithCaptchaDTO);
+
+        if ("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

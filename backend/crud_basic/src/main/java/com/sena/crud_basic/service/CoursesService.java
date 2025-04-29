@@ -1,6 +1,7 @@
 package com.sena.crud_basic.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +47,7 @@ public class CoursesService {
         if (courseWithCaptchaDTO.getCourse().getCourse_name().length() < 1 || courseWithCaptchaDTO.getCourse().getCourse_name().length() > 20) {
             responseDTO response = new responseDTO(
                     "Error",
-                    "El nombre debe tener una longitud entre 1 y 255 caracteres");
+                    "El nombre debe tener una longitud entre 1 y 20 caracteres");
             return response;
         }
 
@@ -84,13 +85,38 @@ public class CoursesService {
     }
     
 
-    public responseDTO delete(int id) {
-        CoursesDTO course = getCourseById(id);
+
+    public responseDTO delete(CourseWithCaptchaDTO courseWithCaptchaDTO) {
+        // Validar el captcha usando el token que viene en el DTO
+        boolean isCaptchaValid = captchaService.validateCaptcha(courseWithCaptchaDTO.getRecaptchaToken());
+    
+        if (!isCaptchaValid) {
+            return new responseDTO(
+                    "Error",
+                    "Captcha inválido. La operación ha sido rechazada.");
+        }
+    
+        // Obtener el ID del curso desde el DTO
+        int id = courseWithCaptchaDTO.getCourse().getId_courses();
+    
+        // Buscar el curso por su ID
+        Optional<CoursesDTO> optionalCourse = IcoursesRepository.findById(id);
+    
+        if (optionalCourse.isEmpty()) {
+            return new responseDTO(
+                    "Error",
+                    "El curso que intentas eliminar no existe.");
+        }
+    
+        // Cambiar el estado del curso a "eliminado" (status = 0)
+        CoursesDTO course = optionalCourse.get();
         course.setStatus(0);
         IcoursesRepository.save(course);
-        responseDTO response = new responseDTO(
+    
+        // Retornar una respuesta indicando éxito
+        return new responseDTO(
                 "OK",
-                "Se eliminó correctamente");
-        return response;
+                "Curso eliminado lógicamente con éxito.");
     }
+    
 }

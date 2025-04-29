@@ -1,23 +1,20 @@
 package com.sena.crud_basic.model;
 
-public class CourseWithCaptchaDTO {
-    private CoursesDTO course;
+public class InstructorWithCaptchaDTO {
+    private InstructorsDTO instructor;
     private String recaptchaToken;
-
-    // Getters y Setters
-    public CoursesDTO getCourse() {
-        return course;
+    
+    public InstructorsDTO getInstructor() {
+        return instructor;
     }
-
-    public void setCourse(CoursesDTO course) {
-        this.course = course;
+    public void setInstructor(InstructorsDTO instructor) {
+        this.instructor = instructor;
     }
-
     public String getRecaptchaToken() {
         return recaptchaToken;
     }
-
     public void setRecaptchaToken(String recaptchaToken) {
         this.recaptchaToken = recaptchaToken;
     }
+
 }
