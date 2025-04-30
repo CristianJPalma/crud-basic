@@ -1,0 +1,102 @@
+/* Fondo oscuro con opacidad para el fondo del modal */
+body.modal-open::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+  }
+  
+  /* Contenedor del modal */
+  .content-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #1e1e2f;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    width: 90%;
+    max-width: 400px;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  .content-modal-activo {
+    display: block;
+  }
+  /* Animación */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+  
+  /* Texto del label */
+  .content-modal span {
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-weight: 500;
+  }
+  .invalido{
+    border-color: red;
+  }
+  /* Input del curso */
+  #first_name,#last_name{
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #2a2a3d;
+    color: #ffffff;
+    margin-bottom: 20px;
+    outline: none;
+  }
+  
+  /* Input cuando está en foco */
+  #first_name:focus,#last_name:focus {
+    border-color: #7f5af0;
+    box-shadow: 0 0 0 2px rgba(127, 90, 240, 0.3);
+  }
+  
+  /* Botón */
+  #guardarLearner{
+    width: 100%;
+    padding: 10px;
+    background-color: #7f5af0;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  #cerrarModal{
+    margin-left: 20%;
+    width: 60%;
+    padding: 10px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 5px;
+  
+  }
+  #guardarCurso:hover {
+    background-color: #684dce;
+  }
+  
+  /* Recaptcha responsive */
+  .g-recaptcha {
+    margin-bottom: 20px;
+  }
+  

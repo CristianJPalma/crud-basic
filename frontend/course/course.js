@@ -1,4 +1,4 @@
-const api = 'http://192.168.18.20:8080';
+const api = 'http://172.30.5.122:8080';
 
 // Elementos DOM
 const mostrarRegistro = document.getElementById('mostrarRegister');

@@ -31,7 +31,3 @@ function changeContent(page) {
     }
     closeNav();
 }
-
-
-
-

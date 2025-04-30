@@ -2,21 +2,21 @@ const api = 'http://172.30.5.122:8080';
 
 // Elementos DOM
 const mostrarRegistro = document.getElementById('mostrarRegister');
-const agregarInstructor = document.getElementById('agregarInstructor');
+const agregarLearner = document.getElementById('agregarLearner');
 const cerrarModal = document.getElementById('cerrarModal');
 const lista = document.getElementById('lista');
 const editFirstNameInput = document.getElementById('edit-first_name');
 const editLastNameInput = document.getElementById('edit-last_name');
-const editInstructorIdInput = document.getElementById('edit-instructorId');
+const editLearnerIdInput = document.getElementById('edit-learnerId');
 const guardarCambiosBtn = document.getElementById('guardarCambios');
-const eliminarInstructorBtn = document.getElementById('eliminarInstructor');
+const eliminarLearnerBtn = document.getElementById('eliminarLearner');
 
 // Captcha widgets
 let formCaptchaWidgetId = null;
 let deleteCaptchaWidgetId = null;
 
-// ID del instructor seleccionado (global)
-let selectedInstructorId = null;
+// ID del learner seleccionado (global)
+let selectedLearnerId = null;
 
 // Cargar captchas
 function onCaptchaLoadCallback() {
@@ -28,24 +28,24 @@ function onCaptchaLoadCallback() {
     });
 }
 
-// Mostrar modal agregar instructor
+// Mostrar modal agregar learner
 document.addEventListener('DOMContentLoaded', () => {
     mostrarRegistro.addEventListener('click', () => {
-        agregarInstructor.classList.add('content-modal-activo');
+        agregarLearner.classList.add('content-modal-activo');
         document.body.classList.add('modal-open');
     });
 
     cerrarModal.addEventListener('click', () => {
-        agregarInstructor.classList.remove('content-modal-activo');
+        agregarLearner.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
     });
 
-    cargarInstructores();
-    setInterval(cargarInstructores, 10000); // cada 10s para evitar tantos requests
+    cargarLearners();
+    setInterval(cargarLearners, 10000);
 });
 
-// Agregar instructor
-document.getElementById('guardarinstructor').addEventListener('click', async (event) => {
+// Agregar learner
+document.getElementById('guardarLearner').addEventListener('click', async (event) => {
     event.preventDefault();
     const firstName = document.getElementById('first_name').value.trim();
     const lastName = document.getElementById('last_name').value.trim();
@@ -62,81 +62,80 @@ document.getElementById('guardarinstructor').addEventListener('click', async (ev
         return;
     }
 
-    const nuevoInstructor = {
-        instructor: {
+    const nuevoLearner = {
+        learner: {
             first_name: firstName,
             last_name: lastName,
-            status: 1 // Puedes agregar otro campo si es necesario
+            status: 1
         },
         recaptchaToken: recaptchaResponse
     };
 
     try {
-        const res = await fetch(`${api}/api/v1/instructors/`, {
+        const res = await fetch(`${api}/api/v1/learners/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(nuevoInstructor)
+            body: JSON.stringify(nuevoLearner)
         });
         const data = await res.json();
-        console.log('Instructor creado:', data);
+        console.log('Learner creado:', data);
 
-        // Limpiar campos
         document.getElementById('first_name').value = '';
         document.getElementById('last_name').value = '';
-        agregarInstructor.classList.remove('content-modal-activo');
+        agregarLearner.classList.remove('content-modal-activo');
         document.body.classList.remove('modal-open');
         grecaptcha.reset(formCaptchaWidgetId);
-        cargarInstructores(); // recargar tabla
+        cargarLearners();
     } catch (error) {
-        console.error('Error creando instructor:', error);
+        console.error('Error creando learner:', error);
     }
 });
 
-// Cargar instructores
-async function cargarInstructores() {
+// Cargar learners
+async function cargarLearners() {
     try {
-        const res = await fetch(`${api}/api/v1/instructors/`);
-        const instructores = await res.json();
+        const res = await fetch(`${api}/api/v1/learners/`);
+        const learners = await res.json();
 
-        lista.innerHTML = ''; // limpiar tabla
-        instructores.forEach(instructor => {
+        lista.innerHTML = '';
+        learners.forEach(learner => {
             const tr = document.createElement('tr');
 
             tr.innerHTML = `
-                <td>${instructor.id_instructor}</td>
-                <td>${instructor.first_name}</td>
-                <td>${instructor.last_name}</td>
+                <td>${learner.id_learner}</td>
+                <td>${learner.first_name}</td>
+                <td>${learner.last_name}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm me-2" data-id="${instructor.id_instructor}" data-firstname="${instructor.first_name}" data-lastname="${instructor.last_name}" data-action="edit">Editar</button>
-                    <button class="btn btn-danger btn-sm" data-id="${instructor.id_instructor}" data-action="delete">Eliminar</button>
+                    <button class="btn btn-warning btn-sm me-2" data-id="${learner.id_learner}" data-firstname="${learner.first_name}" data-lastname="${learner.last_name}" data-action="edit">Editar</button>
+                    <button class="btn btn-danger btn-sm" data-id="${learner.id_learner}" data-action="delete">Eliminar</button>
                 </td>
             `;
             lista.appendChild(tr);
         });
     } catch (error) {
-        console.error('Error cargando instructores:', error);
+        console.error('Error cargando learners:', error);
     }
 }
 
-// Manejar clics en la tabla (edit y delete)
+// Manejar clics en la tabla
 lista.addEventListener('click', (event) => {
     const action = event.target.dataset.action;
-    const instructorId = event.target.dataset.id;
+    const learnerId = event.target.dataset.id;
     const firstName = event.target.dataset.firstname;
     const lastName = event.target.dataset.lastname;
 
     if (!action) return;
 
-    selectedInstructorId = instructorId;
+    selectedLearnerId = learnerId;
 
     if (action === 'edit') {
-        editInstructorIdInput.value = instructorId;
+        editLearnerIdInput.value = learnerId;
         editFirstNameInput.value = firstName;
         editLastNameInput.value = lastName;
         const modal = new bootstrap.Modal(document.getElementById('editarModal'));
         modal.show();
     } else if (action === 'delete') {
-        document.getElementById('eliminaModalLabel').textContent = `Eliminar instructor ${instructorId}`;
+        document.getElementById('eliminaModalLabel').textContent = `Eliminar learner ${learnerId}`;
         const modal = new bootstrap.Modal(document.getElementById('eliminaModal'));
         modal.show();
     }
@@ -144,7 +143,7 @@ lista.addEventListener('click', (event) => {
 
 // Guardar cambios
 guardarCambiosBtn.addEventListener('click', async () => {
-    const instructorId = editInstructorIdInput.value;
+    const learnerId = editLearnerIdInput.value;
     const firstName = editFirstNameInput.value.trim();
     const lastName = editLastNameInput.value.trim();
 
@@ -154,27 +153,27 @@ guardarCambiosBtn.addEventListener('click', async () => {
     }
 
     try {
-        const res = await fetch(`${api}/api/v1/instructors/${instructorId}`, {
+        const res = await fetch(`${api}/api/v1/learners/${learnerId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ first_name: firstName, last_name: lastName })
         });
 
         if (res.ok) {
-            console.log('Instructor actualizado');
-            cargarInstructores();
+            console.log('Learner actualizado');
+            cargarLearners();
             bootstrap.Modal.getInstance(document.getElementById('editarModal')).hide();
         } else {
-            console.error('Error al actualizar el instructor');
-            alert('Error al actualizar el instructor.');
+            console.error('Error al actualizar el learner');
+            alert('Error al actualizar el learner.');
         }
     } catch (error) {
-        console.error('Error actualizando instructor:', error);
+        console.error('Error actualizando learner:', error);
     }
 });
 
-// Eliminar instructor
-eliminarInstructorBtn.addEventListener('click', async (event) => {
+// Eliminar learner
+eliminarLearnerBtn.addEventListener('click', async (event) => {
     event.preventDefault();
 
     const recaptchaResponse = grecaptcha.getResponse(deleteCaptchaWidgetId);
@@ -183,33 +182,33 @@ eliminarInstructorBtn.addEventListener('click', async (event) => {
         return;
     }
 
-    if (!selectedInstructorId) {
-        alert("No se encontró el instructor a eliminar.");
+    if (!selectedLearnerId) {
+        alert("No se encontró el learner a eliminar.");
         return;
     }
 
-    const instructorWithCaptchaDTO = {
-        instructor: { id_instructor: selectedInstructorId },
+    const learnerWithCaptchaDTO = {
+        learner: { id_learner: selectedLearnerId },
         recaptchaToken: recaptchaResponse
     };
 
     try {
-        const res = await fetch(`${api}/api/v1/instructors/`, {
+        const res = await fetch(`${api}/api/v1/learners/`, {
             method: "DELETE",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(instructorWithCaptchaDTO)
+            body: JSON.stringify(learnerWithCaptchaDTO)
         });
 
         if (res.ok) {
             const data = await res.json();
-            console.log('Instructor eliminado:', data);
+            console.log('Learner eliminado:', data);
             alert(data.message);
-            cargarInstructores();
+            cargarLearners();
             bootstrap.Modal.getInstance(document.getElementById('eliminaModal')).hide();
         } else {
             const err = await res.json();
-            console.error('Error eliminando instructor:', err);
-            alert(err.message || "Error eliminando instructor.");
+            console.error('Error eliminando learner:', err);
+            alert(err.message || "Error eliminando learner.");
         }
     } catch (error) {
         console.error('Error en solicitud de eliminación:', error);

@@ -14,6 +14,7 @@ import com.sena.crud_basic.service.InstructorsService;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -50,11 +51,25 @@ public class InstructorsController {
         List<InstructorsDTO> listInstructor = InstructorsService.getFilterInstructor(filter);
         return new ResponseEntity<>(listInstructor, HttpStatus.OK);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteInstructor(@PathVariable int id) {
-        responseDTO response = InstructorsService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updateInstructor(@PathVariable int id, @RequestBody InstructorsDTO updatedInstructor) {
+        responseDTO response = InstructorsService.update(id, updatedInstructor);
+        
+        if("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteInstructor(@RequestBody InstructorWithCaptchaDTO instructorWithCaptchaDTO) {
+        responseDTO response = InstructorsService.delete(instructorWithCaptchaDTO);
+        
+        if("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
     
 }

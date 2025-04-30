@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,8 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.crud_basic.DTO.responseDTO;
-
+import com.sena.crud_basic.model.LearnerWithCaptchaDTO;
 import com.sena.crud_basic.model.LearnersDTO;
+
 
 import com.sena.crud_basic.service.LearnersService;
 
@@ -27,9 +29,8 @@ public class LearnersController {
     private LearnersService learnersService;
 
     @PostMapping("/")
-    public ResponseEntity<Object> registerLearner(
-        @RequestBody LearnersDTO learner) {
-        responseDTO response = learnersService.save(learner);
+    public ResponseEntity<Object> registerLearner(@RequestBody LearnerWithCaptchaDTO learnerWithCaptchaDTO) {
+        responseDTO response = learnersService.save(learnerWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -51,9 +52,26 @@ public class LearnersController {
         return new ResponseEntity<>(ListLearner, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteLearner(@PathVariable int id) {
-        responseDTO response = learnersService.delete(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+    
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updateLearner(@PathVariable int id, @RequestBody LearnersDTO learner) {
+        responseDTO response = learnersService.update(id, learner);
+        
+        if("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteLearner(@RequestBody LearnerWithCaptchaDTO learnerWithCaptchaDTO) {
+        responseDTO response = learnersService.delete(learnerWithCaptchaDTO);
+        
+        if("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
+    }
+    
 }
