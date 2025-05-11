@@ -1,4 +1,4 @@
-const api = 'http://172.30.5.122:8080';
+const api = 'http://localhost:8080';
 
 // Elementos DOM
 const mostrarRegistro = document.getElementById('mostrarRegister');
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Agregar curso
-document.getElementById('guardarCurso').addEventListener('click', async (event) => {
+document.getElementById('agregarCurso').querySelector('form').addEventListener('submit', async (event) => {
     event.preventDefault();
     const courseName = document.getElementById('course_name').value.trim();
 

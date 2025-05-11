@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sena.crud_basic.DTO.responseDTO;
 import com.sena.crud_basic.model.CoursesDTO;
+import com.sena.crud_basic.model.CourseResponseDTO;
 import com.sena.crud_basic.model.CourseWithCaptchaDTO;
 import com.sena.crud_basic.repository.IcoursesRepository;
 
@@ -19,6 +20,14 @@ public class CoursesService {
     @Autowired
     private CaptchaService captchaService;
 
+    public List<CourseResponseDTO> getAllCoursesSimple() {
+    return IcoursesRepository.findAll().stream()
+        .map(l -> new CourseResponseDTO(
+            l.getId_courses(),
+            l.getCourse_name()
+        ))
+        .toList();
+}
     public List<CoursesDTO> getAllCourses() {
         return IcoursesRepository.findAllCoursesActive();
     }

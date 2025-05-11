@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sena.crud_basic.DTO.responseDTO;
+import com.sena.crud_basic.model.LearnerResponseDTO;
 import com.sena.crud_basic.model.LearnerWithCaptchaDTO;
 import com.sena.crud_basic.model.LearnersDTO;
 import com.sena.crud_basic.repository.IlearnersRepository;
@@ -21,6 +22,14 @@ public class LearnersService {
     @Autowired
     private CaptchaService captchaService;
 
+    public List<LearnerResponseDTO> getAllLearnersSimple() {
+    return IlearnersRepository.findAll().stream()
+        .map(l -> new LearnerResponseDTO(
+            l.getId_learner(),
+            l.getFirst_name() + " " + l.getLast_name()
+        ))
+        .toList();
+    }
     public List<LearnersDTO> getAllLearners() {
         return IlearnersRepository.findAllLearnersActive();
     }

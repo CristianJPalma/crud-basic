@@ -33,12 +33,12 @@
       <h3 class="my-3" id="titulo">Courses</h3>
       <a id="mostrarRegister" class="btn btn-success">Add Course</a>
       <div class="content-modal" id="agregarCurso">
-        <form method="post">
+        <form method="post" autocomplete="off">
           <span>Course name</span>
           <input id="course_name" type="text" required placeholder="Ej: Multimedia" />
           <!-- ReCAPTCHA para el formulario de agregar curso -->
           <div class="re" id="formCaptcha"></div>
-          <button id="guardarCurso" class="btn btn-primary">Accept</button>
+          <button id="guardarCurso" type="submit" class="btn btn-primary">Accept</button>
           <button type="button" id="cerrarModal" class="btn btn-danger">Close</button>
         </form>
       </div>

@@ -15,14 +15,32 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sena.crud_basic.DTO.responseDTO;
 import com.sena.crud_basic.model.EnrollmentsDTO;
+import com.sena.crud_basic.service.CoursesService;
 import com.sena.crud_basic.service.EnrollmentsService;
+import com.sena.crud_basic.service.LearnersService;
 
 @RestController
-@RequestMapping("/api/v1/Enrollments")
+@RequestMapping("/api/v1/enrollments")
 public class EnrollmentsController {
 
-@Autowired
+    @Autowired
     private EnrollmentsService EnrollmentsService;
+
+    @Autowired
+    private LearnersService learnersService;
+
+    @Autowired
+    private CoursesService coursesService;
+
+    @GetMapping("/learners")
+    public ResponseEntity<Object> getAllLearnersForEnrollments() {
+        return new ResponseEntity<>(learnersService.getAllLearnersSimple(), HttpStatus.OK);
+    }
+
+    @GetMapping("/courses")
+    public ResponseEntity<Object> getAllCoursesForEnrollments() {
+        return new ResponseEntity<>(coursesService.getAllCoursesSimple(), HttpStatus.OK);
+    }
 
     @PostMapping("/")
     public ResponseEntity<Object> registerEnrollment(

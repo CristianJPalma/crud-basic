@@ -5,60 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/styles.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="../css/estilo.css" rel="stylesheet">
+    <link href="enrollment.css" rel="stylesheet">
     <title>Enrollment</title>
 </head>
 <body class="d-flex flex-column h-100">
+    <!-- Sidebar -->
     <div id="sidebar" class="sidebar">
         <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-        <a href="javascript:void(0)" onclick="changeContent('enrollment')">Enrrolment</a>
+        <a href="javascript:void(0)" onclick="changeContent('enrollment')">Enrollment</a>
         <a href="javascript:void(0)" onclick="changeContent('learner')">Learner</a>
         <a href="javascript:void(0)" onclick="changeContent('instructor')">Instructor</a>
         <a href="javascript:void(0)" onclick="changeContent('course')">Course</a>
-        <a href="javascript:void(0)" onclick="changeContent('scheldule')">Scheldule</a>
+        <a href="javascript:void(0)" onclick="changeContent('schedule')">Schedule</a>
     </div>
     <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; Menú</span>
 
     <main class="flex-shrink-0">
         <div class="container">
             <h3 class="my-3" id="titulo">Enrollments</h3>
+            <a id="mostrarRegister" class="btn btn-success mb-3">Add Enrollment</a>
+            
+            <!-- Modal de agregar enrollment -->
+            <div class="content-modal" id="agregarEnrollment">
+                <form method="post" autocomplete="off">
+                    <div class="mb-3 col-md-12">
+                        <span for="learner" class="form-label">Learner</span>
+                        <select class="form-control" id="learner" name="learner" required>
+                            <option value="" selected disabled>Select a learner</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col-md-12">
+                        <span for="course" class="form-label">Course</span>
+                        <select class="form-control" id="course" name="course" required>
+                            <option value="" selected disabled>Select a course</option>
+                        </select>
+                    </div>
+                    <!-- ReCAPTCHA para el formulario de agregar curso -->
+                    <div class="re mb-3" id="formCaptcha"></div>
+                    <button id="guardarEnrollment" type="submit" class="btn btn-primary">Accept</button>
+                    <button type="button" id="cerrarModal" class="btn btn-danger">Close</button>
+                </form>
+            </div>
 
-            <a id="mostrarRegister" class="btn btn-success">Agregar</a>
-            <form id="contenido" action="#" class="row g-3" method="post" autocomplete="off">
-                <div class="col-md-2">
-                    <label for="id" class="form-label">ID</label>
-                    <input type="number" class="form-control" id="id" name="id" required autofocus>
-                </div>
-                <div class="col-md-6">
-                    <label for="first_Name" class="form-label">First Name</label>
-                    <input type="text" class="form-control" id="first_Name" name="first_Name" required>
-                </div>
-                <div class="col-md-6">
-                    <label for="last_Name" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" id="last_Name" name="last_Name" required>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="course" class="form-label">Course</label>
-                    <select class="form-control" id="course" name="course" required>
-                        <option>ADSO</option>
-                        <option>etc</option>
-                        <option>etc</option>                        
-                    </select>
-                </div>
-
-                <div class="col-md-6">
-                    <label for="enrollment_date" class="form-label">Enrollment Date</label>
-                    <input type="date" class="form-control" id="enrollment_date" name="enrollment_date" required>
-                </div>
-
-
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                </div>
-
-            </form>
+            <!-- Tabla de enrollments -->
             <table class="table table-hover table-bordered my-3" aria-describedby="titulo">
                 <thead class="table-dark">
                     <tr>
@@ -70,30 +61,15 @@
                         <th scope="col">Options</th>
                     </tr>
                 </thead>
-
-                <tbody>
-                    <tr>
-                        <td>0</td>
-                        <td>JUAN PABLO</td>
-                        <td>Perez</td>
-                        <td>ADSO</td>
-                        <td>2025-03-06</td>
-                        <td>
-                            <a href="" class="btn btn-warning btn-sm me-2">Editar</a>
-
-                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#eliminaModal" data-bs-id="1">Eliminar</button>
-                        </td>
-                    </tr>
-
+                <tbody id="lista">
+                    <!-- lista de registros -->
                 </tbody>
             </table>
         </div>
     </main>
 
-
-
-    <div class="modal fade" id="eliminaModal" tabindex="-1" aria-labelledby="eliminaModalLabel" aria-hidden="true">
+    <!-- Modal de eliminación -->
+    <div class="modal fade" id="eliminaModal" tabindex="-1" aria-labelledby="eliminaModalLabel" aria-hidden="true" role="dialog" aria-modal="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -114,26 +90,23 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
-
     <script>
-
-        const eliminaModal = document.getElementById('eliminaModal')
+        // Modal de eliminación: actualiza la acción del formulario con el id correspondiente
+        const eliminaModal = document.getElementById('eliminaModal');
         if (eliminaModal) {
             eliminaModal.addEventListener('show.bs.modal', event => {
-                // Button that triggered the modal
-                const button = event.relatedTarget
-                // Extract info from data-bs-* attributes
-                const id = button.getAttribute('data-bs-id')
-
-                // Update the modal's content.
-                const form = eliminaModal.querySelector('#form-elimina')
-                form.setAttribute('action', 'elimina.html?id=' + id)
-            })
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-bs-id');
+                const form = eliminaModal.querySelector('#form-elimina');
+                form.setAttribute('action', 'elimina.html?id=' + id);
+            });
         }
     </script>
+    <script src="enrollment.js"></script>
     <script src="../js/script.js"></script>
 </body>
 </html>
