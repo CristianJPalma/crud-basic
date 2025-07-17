@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Construir el proyecto con Maven
-RUN ./mvnw clean package
+RUN mvn clean package
 
 # Comando para ejecutar la app
 CMD ["java", "-jar", "target/crud_basic-0.0.1-SNAPSHOT.jar"]
