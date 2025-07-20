@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PatchMapping;
 
 import com.sena.crud_basic.DTO.responseDTO;
+import com.sena.crud_basic.model.EnrollmentWithCaptchaDTO;
 import com.sena.crud_basic.model.EnrollmentsDTO;
 import com.sena.crud_basic.service.CoursesService;
 import com.sena.crud_basic.service.EnrollmentsService;
@@ -43,9 +45,8 @@ public class EnrollmentsController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Object> registerEnrollment(
-        @RequestBody EnrollmentsDTO Enrollment) {
-        responseDTO response = EnrollmentsService.save(Enrollment);
+    public ResponseEntity<Object> registerEnrollment(@RequestBody EnrollmentWithCaptchaDTO enrollmentWithCaptchaDTO) {
+        responseDTO response = EnrollmentsService.save(enrollmentWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -67,9 +68,19 @@ public class EnrollmentsController {
         return new ResponseEntity<>(listEnrollment, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteEnrollment(@PathVariable int id) {
-        responseDTO response = EnrollmentsService.delete(id);
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteEnrollment(@RequestBody EnrollmentWithCaptchaDTO enrollmentWithCaptchaDTO) {
+        responseDTO response = EnrollmentsService.delete(enrollmentWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<Object> updateEnrollment(@PathVariable int id, @RequestBody EnrollmentsDTO updatedEnrollment) {
+        responseDTO response = EnrollmentsService.update(id, updatedEnrollment);
+        if ("OK".equals(response.getStatus())) {
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        }
     }
 }

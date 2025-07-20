@@ -6,7 +6,7 @@ const agregarCurso = document.getElementById('agregarCurso');
 const cerrarModal = document.getElementById('cerrarModal');
 const lista = document.getElementById('lista');
 const editCourseNameInput = document.getElementById('edit-course_name');
-const editCourseIdInput = document.getElementById('edit-courseId');
+const editCours eIdInput = document.getElementById('edit-courseId');
 const guardarCambiosBtn = document.getElementById('guardarCambios');
 const eliminarCursoBtn = document.getElementById('eliminarCurso');
 

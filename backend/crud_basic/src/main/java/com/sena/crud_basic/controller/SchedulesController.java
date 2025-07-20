@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sena.crud_basic.DTO.responseDTO;
 
 import com.sena.crud_basic.model.SchedulesDTO;
+import com.sena.crud_basic.model.ScheduleWithCaptchaDTO;
 
 import com.sena.crud_basic.service.SchedulesService;
 
@@ -28,9 +29,8 @@ public class SchedulesController {
     private SchedulesService SchedulesService;
 
     @PostMapping("/")
-    public ResponseEntity<Object> registerSchedule(
-        @RequestBody SchedulesDTO schedule) {
-        responseDTO response = SchedulesService.save(schedule);
+    public ResponseEntity<Object> registerSchedule(@RequestBody ScheduleWithCaptchaDTO scheduleWithCaptchaDTO) {
+        responseDTO response = SchedulesService.save(scheduleWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -52,9 +52,9 @@ public class SchedulesController {
         return new ResponseEntity<>(ListSchedule, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteSchedule(@PathVariable int id) {
-        responseDTO response = SchedulesService.delete(id);
+    @DeleteMapping("/")
+    public ResponseEntity<Object> deleteSchedule(@RequestBody ScheduleWithCaptchaDTO scheduleWithCaptchaDTO) {
+        responseDTO response = SchedulesService.delete(scheduleWithCaptchaDTO);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }
